@@ -1,0 +1,4 @@
+[workspace]
+members = [
+    "epub_transliterator",
+]

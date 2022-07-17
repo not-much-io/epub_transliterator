@@ -1,7 +1,10 @@
 {
-    "rust-analyzer.linkedProjects": [
-        // "/workspaces/equlibrium/tools/transpiler/Cargo.toml",
-    ],
+    // "rust-analyzer.linkedProjects": [
+    //     "/workspaces/epub_transliterator/epub_transliterator/Cargo.toml",
+    //     "/workspaces/epub_transliterator/text_extractor_lib/Cargo.toml",
+    //     "/workspaces/epub_transliterator/transliterator_lib/Cargo.toml",
+    // ],
+    "rust-analyzer.procMacro.enable": true,
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -10,5 +13,7 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
         "**/._*": true
-    }
+    },
+    "editor.fontFamily": "Consolas, 'Courier New', monospace",
+    "editor.fontSize": 16
 }

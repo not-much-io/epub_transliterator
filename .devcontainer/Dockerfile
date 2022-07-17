@@ -34,7 +34,8 @@ USER ${USERNAME}
 ###
 ### Install rust toolchain
 ###
-ENV RUST_VERSION="nightly-2021-10-24"
+### ENV RUST_VERSION="nightly-2022-05-28"
+ENV RUST_VERSION="stable"
 RUN curl -sSf https://sh.rustup.rs | \
     sh -s -- --default-toolchain ${RUST_VERSION} -y
 ENV PATH=/home/vscode/.cargo/bin:${PATH}

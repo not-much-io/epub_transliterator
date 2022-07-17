@@ -3,9 +3,15 @@
     "tasks": [
         {
             "type": "shell",
-            "command": "echo 'TODO'",
+            "command": "cargo build",
             "group": "build",
-            "label": "test"
+            "label": "build"
         },
+        {
+            "type": "shell",
+            "command": "cd epub_transliterator && time cargo run --release -- --path-to-epub /workspaces/epub_transliterator/epubs/norse_mythology.epub",
+            "group": "test",
+            "label": "test run with time"
+        }
     ]
 }
