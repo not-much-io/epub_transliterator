@@ -1,12 +1,9 @@
 use std::str::Chars;
 
 use log::{debug, error};
-use rayon::prelude::*;
 
 pub fn transliterate_segment(segment: Chars) -> String {
     segment
-        .par_bridge()
-        .into_par_iter()
         .map(transliterate_to_elder_fruthar)
         .collect::<String>()
 }
@@ -53,3 +50,32 @@ const ELDER_FRUTHAR_MAPPING: [(char, char); 26] = [
     ('y', 'ᛁ'),
     ('z', 'ᛉ'),
 ];
+
+/*
+ᚨ => a
+ᛒ => b
+ᚲ => c
+ᛞ => d
+ᛖ => e
+ᚠ => f
+ᚷ => g
+ᚻ => h
+ᛁ => i
+ᛃ => j
+ᚲ => k
+ᛚ => l
+ᛗ => m
+ᚾ => n
+ᛟ => o
+ᛈ => p
+ᛜ => q
+ᚱ => r
+ᛋ => s
+ᛏ => t
+ᚢ => u
+ᚹ => v
+ᚹ => w
+ᛝ => x
+ᛁ => y
+ᛉ => z
+*/
