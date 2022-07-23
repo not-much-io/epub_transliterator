@@ -1,6 +1,6 @@
 mod content_handler;
 mod pandoc_wrapper;
-mod transliterator;
+mod transliteration_dictionary;
 
 use anyhow::{anyhow, Result};
 use log::debug;
@@ -9,6 +9,9 @@ use std::{
     fs::{remove_file, write},
     path::PathBuf,
 };
+use transliteration_dictionary::TransliterationDictionary;
+
+use crate::content_handler::Rewriter;
 
 pub struct EpubTransliteratorEngine {
     params: EpubTransliteratorEngineParams,
@@ -20,6 +23,8 @@ impl EpubTransliteratorEngine {
     }
 
     pub fn transliterate(&mut self) -> Result<()> {
+        let dict = TransliterationDictionary::new(&self.params.path_to_dict)?;
+        let mut rewriter = Rewriter::new(dict);
         let intermediary_output_path = &self
             .params
             .path_to_intermediary_html;
@@ -32,8 +37,7 @@ impl EpubTransliteratorEngine {
         debug!("Done!");
 
         debug!("Transliterating epub's content..");
-        let epub_as_transliterated_html =
-            content_handler::rewrite_with(epub_as_html, &transliterator::transliterate_segment)?;
+        let epub_as_transliterated_html = rewriter.rewrite(epub_as_html)?;
         debug!("Done!");
 
         debug!(
@@ -60,19 +64,25 @@ impl EpubTransliteratorEngine {
 
 #[derive(Debug)]
 pub struct EpubTransliteratorEngineParams {
+    path_to_dict: PathBuf,
     path_to_input_epub: PathBuf,
     path_to_output_epub: PathBuf,
     path_to_intermediary_html: PathBuf,
 }
 
 impl EpubTransliteratorEngineParams {
-    pub fn new(path_to_input_epub_as_string: &String) -> Result<EpubTransliteratorEngineParams> {
+    pub fn new(
+        path_to_dict: &String,
+        path_to_input_epub_as_string: &String,
+    ) -> Result<EpubTransliteratorEngineParams> {
+        let path_to_dict = Self::parse_path_to_dict(path_to_dict)?;
         let path_to_input_epub = Self::parse_path_to_input_epub(path_to_input_epub_as_string)?;
         let path_to_output_epub = Self::parse_path_to_output_epub(path_to_input_epub_as_string)?;
         let path_to_intermediary_html =
             Self::parse_path_to_intermediary_html(path_to_input_epub_as_string)?;
 
         let params = EpubTransliteratorEngineParams {
+            path_to_dict,
             path_to_input_epub,
             path_to_output_epub,
             path_to_intermediary_html,
@@ -81,10 +91,25 @@ impl EpubTransliteratorEngineParams {
         Ok(params)
     }
 
+    fn parse_path_to_dict(path_to_dict_string: &String) -> Result<PathBuf> {
+        let path_to_dict = PathBuf::from(path_to_dict_string);
+        if !path_to_dict.exists() {
+            return Err(anyhow!("The supplied dict path doesn't exist"));
+        }
+        if path_to_dict.extension() != Some(OsStr::new("yaml")) {
+            return Err(anyhow!(
+                "Expecting yaml file to have .yaml file extension, real: '{:?}'",
+                path_to_dict.extension()
+            ));
+        }
+
+        Ok(path_to_dict)
+    }
+
     fn parse_path_to_input_epub(path_to_input_epub_string: &String) -> Result<PathBuf> {
         let path_to_epub = PathBuf::from(path_to_input_epub_string);
         if !path_to_epub.exists() {
-            return Err(anyhow!("The supplied epub path doesn't exists"));
+            return Err(anyhow!("The supplied epub path doesn't exist"));
         }
         if path_to_epub.extension() != Some(OsStr::new("epub")) {
             return Err(anyhow!(

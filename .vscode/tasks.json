@@ -9,7 +9,7 @@
         },
         {
             "type": "shell",
-            "command": "cd epub_transliterator && time cargo run --release -- --path-to-epub /workspaces/epub_transliterator/epubs/norse_mythology.epub",
+            "command": "cd epub_transliterator && time cargo run --release -- --path-to-epub /workspaces/epub_transliterator/epubs/norse_mythology.epub --path-to-dict /workspaces/epub_transliterator/dicts/elder_futhark.yaml",
             "group": "test",
             "label": "test run with time"
         }
